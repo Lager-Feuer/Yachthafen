@@ -1,0 +1,76 @@
+﻿<main:SWWindow x:Class="Yachthafen.View.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yachthafen.View"
+        xmlns:VM="clr-namespace:Yachthafen.ViewModel"
+        xmlns:main="clr-namespace:Yachthafen"
+        mc:Ignorable="d"
+        Title="MainView" MinHeight="450" Height="450" Width="800">
+    <Window.DataContext>
+        <VM:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="100" Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Column="0">
+            <Button Style="{StaticResource mainButtons}" FontSize="10" Margin="5" Command="{Binding NewNotebookCommand}" Cursor="Hand" ToolTip="Notzbuch hinzufügen">
+                <Image Source="\res\icons\bw_icon_w.png" Width="25" Height="25" Margin="0"/>
+            </Button>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" MaxHeight="30" Orientation="Horizontal" Grid.Column="1">
+            <Label Content="Suche: "/>
+            <TextBox Width="300" Margin="3" TextChanged="TextBox_TextChanged"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+            <ListView x:Name="NotebookView" ItemsSource="{Binding NotebookView}" SelectionChanged="NotebookView_SelectionChanged" MinHeight="30">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBox Margin="10,10,10,10" Padding="0" Text="{Binding Title}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2">
+            <ListView x:Name="NotesListView" ScrollViewer.CanContentScroll="True" BorderThickness="0" ItemsSource="{Binding NotesListView}" SelectionChanged="ListView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Title}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <GridSplitter Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" Margin="0" Width="5" ResizeDirection="Columns" Background="#003758" />
+
+        <ScrollViewer Grid.Row="2" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl Grid.Column="1" x:Name="DynamicContent" ItemsSource="{Binding DynamicContentView}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBox MinHeight="368"
+                                 AcceptsReturn="True" AcceptsTab="True"
+                                 TextWrapping="Wrap"
+                                 BorderThickness="0" 
+                                 Text="{Binding Content}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </Grid>
+</main:SWWindow>

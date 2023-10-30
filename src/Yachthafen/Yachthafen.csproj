@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>Yachthafen</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Yachthafen</AssemblyName>
+    <ApplicationIcon>res\icons\bw_icon_b.ico</ApplicationIcon>
+    <Win32Resource />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="res\icons\bw_icon_b.ico" />
+    <None Remove="res\icons\bw_icon_b.png" />
+    <None Remove="res\icons\bw_icon_w.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FontAwesome5" Version="2.1.6" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="res\icons\bw_icon_b.ico" />
+    <Resource Include="res\icons\bw_icon_b.png" />
+    <Resource Include="res\icons\bw_icon_w.png" />
+  </ItemGroup>
+
+</Project>

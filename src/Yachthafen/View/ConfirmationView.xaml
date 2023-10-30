@@ -1,0 +1,34 @@
+﻿<main:SWWindow x:Class="Yachthafen.View.ConfirmationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yachthafen.View"
+        xmlns:model="clr-namespace:Yachthafen.Model"
+        xmlns:viewmodel="clr-namespace:Yachthafen.ViewModel"
+        xmlns:main="clr-namespace:Yachthafen"
+        mc:Ignorable="d"
+        ShowInTaskbar="True"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        Background="White"
+        BorderBrush="#00AFD3"
+        BorderThickness="2"
+        Left="600"
+        Top="250"
+        Width="300" Height="150">
+    <Border BorderBrush="#003758" BorderThickness="3">
+        <Grid x:Name="mainGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="messageLabel" Text="Platzhalter-Content"
+               HorizontalAlignment="Center" TextWrapping="Wrap" Margin="10" FontWeight="Bold"/>
+            <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+                <Button Style="{StaticResource mainButtons}" x:Name="cancelBtn" Visibility="Collapsed" Content="Abbrechen" FontSize="15" Click="Cancel" />
+                <Button Style="{StaticResource mainButtons}" Content="Bestätigen" FontSize="15" Click="Confirm"/>
+            </WrapPanel>
+        </Grid>
+    </Border>
+</main:SWWindow>
