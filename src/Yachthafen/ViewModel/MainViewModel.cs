@@ -45,6 +45,7 @@ namespace Yachthafen.ViewModel
             BerthSelectionChangedCommand = new DelegateCommand(x => BerthSelectionChanged());
             CellChangedCommand = new DelegateCommand(x => CellChanged());
             SaveCommand = new DelegateCommand(x => SaveData(true));
+
             LoadData();
             if(Berths.Count > 0) ImageBytes = Berths[0].BerthImage;
         }
