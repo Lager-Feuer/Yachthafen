@@ -8,39 +8,68 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Yachthafen.Model;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using System.Windows.Media.Animation;
+using System.Net.Http;
+using System.ComponentModel.Design;
+using Newtonsoft.Json.Linq;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
+using System.Windows.Media;
 
 namespace Yachthafen.ViewModel
 {
     class MainViewModel : ViewModelBase
     {
         // Commands
-        public ICommand NewNotebookCommand { get; set; }
-        public ICommand NewNoteCommand { get; set; }
-        public ICommand DeleteSelectedNoteCommand { get; set; }
-        public ICommand DeleteSelectedNotebookCommand { get; set; }
+        public ICommand ChangeImageCommand { get; set; }
+        public ICommand BerthSelectionChangedCommand { get; set; }
+        public ICommand CellChangedCommand { get; set; }
+        public ICommand SaveCommand { get; set; }
 
         // Views and Collections for Views
-        public ObservableCollection<Notebook> NotebookCollection = new ObservableCollection<Notebook>();
-        public ObservableCollection<object> DynamicNotesCollection = new ObservableCollection<object>();
-        public ICollectionView NotebookView { get; set; }
-        public ICollectionView NotesListView { get; set; }
-        public ICollectionView DynamicContentView { get; set; }
+        private ObservableCollection<Berth> _berths;
+        private Berth _selectedBerth;
+        private byte[] _imageBytes;
 
+        public ObservableCollection<Berth> Berths { get { return _berths; } set { _berths = value; NotifyPropertyChanged(); } }
+        public Berth SelectedBerth { get { return _selectedBerth; } set { _selectedBerth = value; NotifyPropertyChanged(); } }
+        public byte[] ImageBytes { get { return _imageBytes; } set { _imageBytes = value; NotifyPropertyChanged(); } }
+
+        // Constructor
         public MainViewModel()
         {
-            getSavedNotebooks();
-            // Commands
-            NewNotebookCommand = new DelegateCommand(x => AddNotebook());
-            NewNoteCommand = new DelegateCommand(x => AddNote());
-            DeleteSelectedNoteCommand = new DelegateCommand(x => DeleteNote());
-            DeleteSelectedNotebookCommand = new DelegateCommand(x => DeleteNotebook());
-
-            // Views
-            NotebookView = CollectionViewSource.GetDefaultView(NotebookCollection);
-            DynamicContentView = CollectionViewSource.GetDefaultView(DynamicNotesCollection);
+            Berths = new ObservableCollection<Berth>();
+            ChangeImageCommand = new DelegateCommand(x => OpenImageDialog());
+            BerthSelectionChangedCommand = new DelegateCommand(x => BerthSelectionChanged());
+            CellChangedCommand = new DelegateCommand(x => CellChanged());
+            SaveCommand = new DelegateCommand(x => SaveData(true));
+            LoadData();
+            if(Berths.Count > 0) ImageBytes = Berths[0].BerthImage;
         }
 
-        // Private Methoden
+        // General methods
+        private void LoadData()
+        {
+            try
+            {
+                using (StreamReader JsonStreamReader = new StreamReader(@"res/json/data.json"))
+                {
+                    string json = JsonStreamReader.ReadToEnd();
+                    Berths = JsonConvert.DeserializeObject<ObservableCollection<Berth>>(json);
+                }
+            }
+            catch { }
+        }
+        public void SaveData(bool isCommand)
+        {
+            string berthString = JsonConvert.SerializeObject(Berths);
+            File.WriteAllText(@"res/json/data.json", berthString);
+
+            if (isCommand) confirmView("Daten wurden gespeichert.");
+        }
+
         private void confirmView(string message)
         {
             View.ConfirmationView confirmationView = new View.ConfirmationView();
@@ -48,99 +77,72 @@ namespace Yachthafen.ViewModel
             confirmationView.ShowDialog();
             confirmationView.Close();
         }
-        private void AddNotebook()
+
+        // Converter methods
+        private byte[] BitmapToBytes(object value, bool isTransformed)
         {
-            Notebook newNotebook = new Notebook() { Title = "New-Notebook" };
-            NotebookCollection.Add(newNotebook);
-        }
+            byte[] imageBytes;
 
-        private void DeleteNotebook()
-        {
-            ListView notebookView = View.MainView.MainViewInstance.NotebookView;
-            ListView notesView = View.MainView.MainViewInstance.NotesListView;
-            Notebook selectedNotebook = (Notebook)notebookView.SelectedItem;
-
-            if (selectedNotebook != null)
-                NotebookCollection.Remove(selectedNotebook);
-            else
-                confirmView("Wählen Sie vorher ein Notizbuch aus, welches gelöscht werden soll.");
-
-            if (NotebookCollection.Count == 0)
+            using (MemoryStream ms = new MemoryStream())
             {
-                notesView.ItemsSource = null;
-                notesView.Items.Clear();
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+
+                if (!isTransformed) encoder.Frames.Add(BitmapFrame.Create((BitmapImage)value));
+                else encoder.Frames.Add(BitmapFrame.Create((TransformedBitmap)value));
+                encoder.Save(ms);
+                imageBytes = ms.ToArray();
             }
+            return imageBytes;
         }
 
-        private void AddNote()
+        private BitmapImage BytesToBitmap(byte[] value)
         {
-            ListView notebookView = View.MainView.MainViewInstance.NotebookView;
-            Notebook selectedNotebook = (Notebook)notebookView.SelectedItem;
-            Note note = new Note() { Title = "Neue Notiz", Content = "Neuer Inhalt" };
-            if (notebookView.SelectedItem != null)
-                selectedNotebook.Notizen.Add(note);
-            else
-                confirmView("Wählen Sie zunächst ein Notizbuch aus, zu dem Sie eine Notiz hinzufügen möchten.");
-        }
-
-        private void DeleteNote()
-        {
-            ListView notebookView = View.MainView.MainViewInstance.NotebookView;
-            ListView notesView = View.MainView.MainViewInstance.NotesListView;
-            Notebook selectedNotebook = (Notebook)notebookView.SelectedItem;
-            if ((Note)notesView.SelectedItem != null)
+            if (value is byte[] byteArray)
             {
-                Note note = (Note)notesView.SelectedItem;
-                selectedNotebook.Notizen.Remove(note);
+                BitmapImage imageSource = new BitmapImage();
+                imageSource.BeginInit();
+                imageSource.StreamSource = new MemoryStream(byteArray);
+                imageSource.EndInit();
+                return imageSource;
             }
-            else
-                confirmView("Wählen Sie vorher eine Notiz aus, die gelöscht werden soll.");
+            return null;
         }
 
-        private void getSavedNotebooks()
+
+        // Command methods for View
+        private void OpenImageDialog()
         {
-            try
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image Files|*.png;*.jpg;*.jpeg;*.gif;*.bmp|All Files|*.*";
+
+            if (openFileDialog.ShowDialog() == true)
             {
-                using (StreamReader JsonStreamReader = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\note-it\notebooks\notebooks.json"))
+                if (SelectedBerth == null)
                 {
-                    string json = JsonStreamReader.ReadToEnd();
-                    NotebookCollection = JsonConvert.DeserializeObject<ObservableCollection<Notebook>>(json);
+                    confirmView("Select an entry first");
+                    return;
                 }
+                Uri uri = new Uri(openFileDialog.FileName);
+                BitmapImage selectedImg = new BitmapImage(uri);
+                var targetMap = new TransformedBitmap(selectedImg, new ScaleTransform(0.5, 0.5));
+
+                Berths[Berths.IndexOf(SelectedBerth)].BerthImage = BitmapToBytes(targetMap, true);
+                ImageBytes = Berths[Berths.IndexOf(SelectedBerth)].BerthImage;
             }
-            catch { }
         }
 
-        //Public Methoden für SelectionChanged-Events und Public-Methode zum Speichern der Notebooks
-
-        public void saveNotebooks()
+        private void BerthSelectionChanged()
         {
-            string notebooks = JsonConvert.SerializeObject(NotebookCollection);
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\note-it\notebooks\notebooks.json", notebooks);
+            if (SelectedBerth == null) return;
+            ImageBytes = Berths[Berths.IndexOf(SelectedBerth)].BerthImage;
         }
 
-        public void ListViewSelectionChanged(Note noteItem)
+        private void CellChanged()
         {
-            DynamicNotesCollection.Clear();
-            if (noteItem != null)
-                DynamicNotesCollection.Add(noteItem);
-        }
-
-        public void NotebookViewSelectionChanged(Notebook notebookItem)
-        {
-            ListView notesView = View.MainView.MainViewInstance.NotesListView;
-            if (notebookItem != null)
-                notesView.ItemsSource = notebookItem.Notizen;
-        }
-
-        public void TextBoxTextChanged(String searchText)
-        {
-            try
+            for (int i = 0; i < Berths.Count; i++)
             {
-                Note noteItem = DynamicNotesCollection[0] as Note;
-                if (noteItem.Content.Contains(searchText))
-                    MessageBox.Show("Notiz beinhaltet den Text");
+                Berths[i].BerthID = i + 1;
             }
-            catch { }
         }
     }
 }

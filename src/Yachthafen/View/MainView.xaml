@@ -6,71 +6,95 @@
         xmlns:local="clr-namespace:Yachthafen.View"
         xmlns:VM="clr-namespace:Yachthafen.ViewModel"
         xmlns:main="clr-namespace:Yachthafen"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="MainView" MinHeight="450" Height="450" Width="800">
+        MaxHeight="700" Height="700" Width="1000">
     <Window.DataContext>
         <VM:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <main:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="100" Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <TabControl>
+            <TabItem Header="Liegeplätze">
+                <Border BorderBrush="Black" BorderThickness="2" Margin="5">
+                    <Grid Margin="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="400"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Name="berthDataGrid" 
+                              CanUserDeleteRows="True" 
+                              CanUserAddRows="True" 
+                              CanUserReorderColumns="True" 
+                              CanUserSortColumns="True"
+                              SelectionUnit="FullRow"
+                              SelectionMode="Extended"
+                              AutoGenerateColumns="True"
+                              AutoGeneratingColumn="DataGrid_OnAutoGeneratingColumn"
+                              ColumnWidth="*"
+                              ItemsSource="{Binding Berths}"
+                              Height="Auto" MaxHeight="600"
+                              SelectedItem="{Binding SelectedBerth, Mode=TwoWay}"
+                              SelectedIndex="0">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="25">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="Delete">
+                                                <Image Source="/res/icons/delete_icon.png" Width="20" Height="20" Margin="0"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="BerthID" IsReadOnly="True" Width="100" Binding="{Binding BerthID}"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding BerthSelectionChangedCommand}" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="CurrentCellChanged">
+                                    <i:InvokeCommandAction Command="{Binding CellChangedCommand}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </DataGrid>
 
-        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Column="0">
-            <Button Style="{StaticResource mainButtons}" FontSize="10" Margin="5" Command="{Binding NewNotebookCommand}" Cursor="Hand" ToolTip="Notzbuch hinzufügen">
-                <Image Source="\res\icons\bw_icon_w.png" Width="25" Height="25" Margin="0"/>
-            </Button>
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" MaxHeight="30" Orientation="Horizontal" Grid.Column="1">
-            <Label Content="Suche: "/>
-            <TextBox Width="300" Margin="3" TextChanged="TextBox_TextChanged"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
-            <ListView x:Name="NotebookView" ItemsSource="{Binding NotebookView}" SelectionChanged="NotebookView_SelectionChanged" MinHeight="30">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBox Margin="10,10,10,10" Padding="0" Text="{Binding Title}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
-        
-        <StackPanel Grid.Row="2">
-            <ListView x:Name="NotesListView" ScrollViewer.CanContentScroll="True" BorderThickness="0" ItemsSource="{Binding NotesListView}" SelectionChanged="ListView_SelectionChanged">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBox Text="{Binding Title}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
+                        <GridSplitter Grid.Column="0" VerticalAlignment="Stretch" Margin="0" Width="5" ResizeDirection="Columns" Background="#003758" />
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" Name="imgCol"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Command="{Binding ChangeImageCommand}" Grid.Row="0" Grid.Column="1" Margin="2" Padding="0">
+                                <Image Source="/res/icons/edit_icon.png" Width="25" Height="25" Margin="0"/>
+                            </Button>
+                            <Image Grid.ColumnSpan="2" Grid.Row="1" Source="{Binding ImageBytes, Converter={StaticResource ByteArrayToImageSourceConverter}}" Stretch="Fill" Width="Auto" Height="Auto" Margin="5"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </TabItem>
 
-        <GridSplitter Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" Margin="0" Width="5" ResizeDirection="Columns" Background="#003758" />
+            <TabItem Header="Schiffe">
+                <Grid>
+                    <TextBlock Text="Inhalt von Tab 2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+            </TabItem>
+        </TabControl>
 
-        <ScrollViewer Grid.Row="2" Grid.Column="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Grid.Column="1" x:Name="DynamicContent" ItemsSource="{Binding DynamicContentView}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBox MinHeight="368"
-                                 AcceptsReturn="True" AcceptsTab="True"
-                                 TextWrapping="Wrap"
-                                 BorderThickness="0" 
-                                 Text="{Binding Content}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
 
     </Grid>
 </main:SWWindow>

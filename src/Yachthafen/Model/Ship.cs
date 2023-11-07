@@ -2,16 +2,16 @@
 
 namespace Yachthafen.Model
 {
-    class Notebook : ViewModelBase
+    class Ship : ViewModelBase
     {
-        public Notebook()
+        public Ship()
         {
-            this.Notizen = new ObservableCollection<Note>();
+            this.Notizen = new ObservableCollection<Berth>();
         }
 
         private string _title;
 
-        public ObservableCollection<Note> Notizen { get; set; }
+        public ObservableCollection<Berth> Notizen { get; set; }
         public string Title { get { return _title; } set { _title = value; NotifyPropertyChanged(); } }
     }
 }

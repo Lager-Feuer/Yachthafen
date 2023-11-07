@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using Yachthafen.Model;
 
 namespace Yachthafen.View
 {
@@ -28,7 +29,8 @@ namespace Yachthafen.View
         protected void CloseButtonNew_Click(object sender, RoutedEventArgs e)
         {
             ConfirmationView confirmationView = new ConfirmationView();
-            confirmationView.messageLabel.Text = "Möchten Sie das Programm wirklich beenden?";
+            confirmationView.Height = 200;
+            confirmationView.messageLabel.Text = "Möchten Sie das Programm wirklich beenden?\nAlle Änderungen werden automatisch gespeichert.";
             confirmationView.cancelBtn.Visibility = Visibility.Visible;
             confirmationView.ShowDialog();
             confirmationView.Close();
@@ -40,30 +42,15 @@ namespace Yachthafen.View
         {
             base.OnClosed(e);
             MainViewInstance = null;
-            ((MainViewModel)DataContext).saveNotebooks();
+            ((MainViewModel)DataContext).SaveData(false);
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            ListView notesView = sender as ListView;
-            ((MainViewModel)DataContext).ListViewSelectionChanged((Model.Note)notesView.SelectedItem);
-        }
-
-        private void NotebookView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ListView notebookView = sender as ListView;
-            ((MainViewModel)DataContext).NotebookViewSelectionChanged((Model.Notebook)notebookView.SelectedItem);
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Model.Note noteItem = ((MainViewModel)DataContext).DynamicNotesCollection[0] as Model.Note;
-            TextBox searchField = sender as TextBox;
-            if (noteItem.Content.Contains(searchField.Text))
+            if (e.PropertyName == "BerthImage" || e.PropertyName == "BerthID")
             {
-
+                e.Column = null;
             }
-            ((MainViewModel)DataContext).TextBoxTextChanged(searchField.Text);
         }
     }
 }

@@ -138,17 +138,7 @@
                                                     Content="Datei"
                                                     TextElement.FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome" />
                                             </MenuItem.Header>
-                                            <MenuItem Header="Notibuch hinzufügen" Foreground="Black" Command="{Binding NewNotebookCommand}"></MenuItem>
-                                            <MenuItem Header="Notiz hinzufügen" Foreground="Black" Command="{Binding NewNoteCommand}">
-                                                <!--<MenuItem Header="Konfigurationsdatei" Foreground="Black" Command="{Binding NewConfigCommand}"/>
-                                                <MenuItem.Icon >
-                                                    <Image Source="/img/changelog.png" />
-                                                </MenuItem.Icon>-->
-                                            </MenuItem>
-                                            <MenuItem Header="Ausgewähltes Notizbuch löschen" Foreground="Black" Command="{Binding DeleteSelectedNotebookCommand}"></MenuItem>
-                                            <MenuItem Header="Ausgewählte Notiz löschen" Foreground="Black" Command="{Binding DeleteSelectedNoteCommand}">
-                                                <!--<MenuItem Header="Konfigurationsdatei" Foreground="Black" Command="{Binding OpenConfigCommand}"/>-->
-                                            </MenuItem>
+                                            <MenuItem Header="Speichern" Foreground="Black" Command="{Binding SaveCommand}"></MenuItem>
                                         </MenuItem>
                                     </Menu>
                                 </DockPanel>
