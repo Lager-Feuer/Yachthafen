@@ -47,7 +47,7 @@ namespace Yachthafen.View
 
         private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (e.PropertyName == "BerthImage" || e.PropertyName == "BerthID")
+            if (e.PropertyName == "BerthImage" || e.PropertyName == "BerthID" || e.PropertyName == "Length" || e.PropertyName == "Width" || e.PropertyName == "Depth")
             {
                 e.Column = null;
             }

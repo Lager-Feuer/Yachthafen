@@ -123,7 +123,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <DockPanel x:Name="panelFile">
-                                    <Image Source="/res/icons/bw_icon_w.png" Width="22" Height="22" Margin="7" Grid.Row="0" Grid.Column="0" />
+                                    <Image Source="/res/icons/yachthafen_icon.ico" Width="22" Height="22" Margin="7" Grid.Row="0" Grid.Column="0" />
                                     <Menu x:Name="FileMenu" Grid.Row="0" Grid.Column="0" Style="{StaticResource FileMenuStyle}" >
                                         <MenuItem Height="36" Width="65">
                                             <MenuItem.Header>

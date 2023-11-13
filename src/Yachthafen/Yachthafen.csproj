@@ -6,7 +6,7 @@
     <RootNamespace>Yachthafen</RootNamespace>
     <UseWPF>true</UseWPF>
     <AssemblyName>Yachthafen</AssemblyName>
-    <ApplicationIcon>res\icons\bw_icon_b.ico</ApplicationIcon>
+    <ApplicationIcon>res\icons\yachthafen_icon.ico</ApplicationIcon>
     <Win32Resource />
   </PropertyGroup>
 
@@ -20,6 +20,7 @@
     <None Remove="res\icons\bw_icon_w.png" />
     <None Remove="res\icons\delete_icon.png" />
     <None Remove="res\icons\edit_icon.png" />
+    <None Remove="res\icons\yachthafen_icon.ico" />
     <None Remove="res\json\data.json" />
   </ItemGroup>
 
@@ -39,6 +40,9 @@
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
     <Resource Include="res\icons\edit_icon.png" />
+    <Resource Include="res\icons\yachthafen_icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="res\json\data.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

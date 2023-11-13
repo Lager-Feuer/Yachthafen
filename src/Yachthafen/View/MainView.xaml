@@ -58,6 +58,9 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="BerthID" IsReadOnly="True" Width="100" Binding="{Binding BerthID}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Länge (in m)" IsReadOnly="False" Width="100" Binding="{Binding Length}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Breite (in m)" IsReadOnly="False" Width="100" Binding="{Binding Width}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Tiefe (in m)" IsReadOnly="False" Width="100" Binding="{Binding Depth}"></DataGridTextColumn>
                             </DataGrid.Columns>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
@@ -69,20 +72,20 @@
                             </i:Interaction.Triggers>
                         </DataGrid>
 
-                        <GridSplitter Grid.Column="0" VerticalAlignment="Stretch" Margin="0" Width="5" ResizeDirection="Columns" Background="#003758" />
+                        <GridSplitter Grid.Column="0" VerticalAlignment="Stretch" Margin="0" Width="5" ResizeDirection="Columns" Background="#003758"/>
                         <Grid Grid.Column="2">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="50"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" Name="imgCol"/>
-                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="50"/>
                             </Grid.ColumnDefinitions>
                             <Button Command="{Binding ChangeImageCommand}" Grid.Row="0" Grid.Column="1" Margin="2" Padding="0">
-                                <Image Source="/res/icons/edit_icon.png" Width="25" Height="25" Margin="0"/>
+                                <Image Source="/res/icons/edit_icon.png" Width="30" Height="30" Margin="0"/>
                             </Button>
-                            <Image Grid.ColumnSpan="2" Grid.Row="1" Source="{Binding ImageBytes, Converter={StaticResource ByteArrayToImageSourceConverter}}" Stretch="Fill" Width="Auto" Height="Auto" Margin="5"/>
+                            <Image x:Name="berthImage" Grid.ColumnSpan="2" Grid.Row="1" Source="{Binding ImageBytes, Converter={StaticResource ByteArrayToImageSourceConverter}}" Stretch="Uniform" SnapsToDevicePixels="True" Width="Auto" Height="Auto" Margin="5" RenderOptions.BitmapScalingMode="Fant"/>
                         </Grid>
                     </Grid>
                 </Border>
